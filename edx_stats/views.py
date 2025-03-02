@@ -11,6 +11,7 @@ from django.db.models.functions import ExtractYear
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from common.djangoapps.student.models import CourseEnrollment, UserProfile
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from django.conf import settings
 
 from . import cache
 
@@ -131,7 +132,7 @@ class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
             'country_stats': country_stats,
             'yearly_stats': yearly_stats,
             **total_stats,
-            'platform_name': configuration_helpers.get_value('PLATFORM_NAME', 'Open edX'),
+            'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         })
 
         return context
@@ -147,7 +148,7 @@ class CourseListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
             cache.get_cache_key('course_stats_all'),
             lambda: list(get_course_stats())
         )
-        context['platform_name'] = configuration_helpers.get_value('PLATFORM_NAME', 'Open edX')
+        context['platform_name'] = configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
         return context
 
 
@@ -161,7 +162,7 @@ class CountryListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
             cache.get_cache_key('country_stats_all'),
             lambda: list(get_country_stats())
         )
-        context['platform_name'] = configuration_helpers.get_value('PLATFORM_NAME', 'Open edX')
+        context['platform_name'] = configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
         return context
 
 
@@ -175,5 +176,5 @@ class YearlyStatsView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
             cache.get_cache_key('yearly_stats'),
             get_yearly_stats
         )
-        context['platform_name'] = configuration_helpers.get_value('PLATFORM_NAME', 'Open edX')
+        context['platform_name'] = configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
         return context

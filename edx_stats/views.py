@@ -1,9 +1,11 @@
 """
 Views for the edx_stats application.
 """
+import logging
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Count
 from django.db.models.functions import ExtractYear
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -12,7 +14,9 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 
 from . import cache
 
+logger = logging.getLogger(__name__)
 
+User = get_user_model()
 class StaffRequiredMixin:
     """Verify that the user has staff access."""
     def dispatch(self, request, *args, **kwargs):
@@ -83,6 +87,10 @@ def get_yearly_stats():
 
 def get_total_stats():
     """Get total statistics."""
+    logger.info("Getting total stats")
+    logger.debug(f"CourseOverview.objects.count(): {CourseOverview.objects.count()}")
+    logger.debug(f"CourseEnrollment.objects.count(): {CourseEnrollment.objects.count()}")
+    logger.debug(f"User.objects.count(): {User.objects.count()}")
     return {
         'total_courses': CourseOverview.objects.count(),
         'total_enrollments': CourseEnrollment.objects.count(),
@@ -93,7 +101,7 @@ def get_total_stats():
 class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
     """Main dashboard view"""
     template_name = 'edx_stats/dashboard.html'
-
+    logger.info("Getting dashboard context")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

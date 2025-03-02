@@ -1,90 +1,78 @@
-{% extends 'core/base.html' %}
-
-{% block title %}Dashboard - Open edX Statistics{% endblock %}
-
-{% block header %}Dashboard{% endblock %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-    <!-- Summary Stats -->
-    <div class="row" id="dashboard-stats">
-        {% include 'core/partials/dashboard_stats.html' %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">EdX Statistics Dashboard</h1>
+        <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            hx-get="{% url 'core:refresh_stats' %}"
+            hx-target="#refresh-status"
+            hx-indicator="#refresh-indicator">
+            Refresh Stats
+            </button>
+        <div id="refresh-indicator" class="htmx-indicator">
+            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+            </div>
+
+    <div id="refresh-status" class="mb-4 text-sm text-gray-600"></div>
+
+    <!-- Dashboard Stats -->
+    <div
+        id="dashboard-stats"
+        hx-get="{% url 'core:htmx_dashboard_stats' %}"
+        hx-trigger="load"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        Loading stats...
+            </div>
+
+    <!-- Course Stats -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Course Statistics</h2>
+        <div
+            id="course-list"
+            hx-get="{% url 'core:htmx_courses' %}"
+            hx-trigger="load"
+            class="bg-white rounded-lg shadow p-4">
+            Loading courses...
+        </div>
     </div>
 
-    <!-- Top Courses -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Top Courses by Enrollment</h5>
-            <button class="btn btn-sm btn-outline-primary"
-                    hx-get="{% url 'core:htmx_course_list' %}"
-                    hx-target="#course-list"
-                    hx-swap="innerHTML">
-                Refresh
-            </button>
-        </div>
-        <div class="card-body">
-            <div id="course-list">
-                {% include 'core/partials/course_list.html' with courses=course_stats %}
-            </div>
-            <div class="text-center mt-3">
-                <a href="{% url 'core:course_list' %}" class="btn btn-outline-secondary">View All Courses</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Top Countries -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Top Countries by User Count</h5>
-            <button class="btn btn-sm btn-outline-primary"
-                    hx-get="{% url 'core:htmx_country_list' %}"
-                    hx-target="#country-list"
-                    hx-swap="innerHTML">
-                Refresh
-            </button>
-        </div>
-        <div class="card-body">
-            <div id="country-list">
-                {% include 'core/partials/country_list.html' with countries=country_stats %}
-            </div>
-            <div class="text-center mt-3">
-                <a href="{% url 'core:country_list' %}" class="btn btn-outline-secondary">View All Countries</a>
-            </div>
+    <!-- Country Stats -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Country Statistics</h2>
+        <div
+            id="country-list"
+            hx-get="{% url 'core:htmx_countries' %}"
+            hx-trigger="load"
+            class="bg-white rounded-lg shadow p-4">
+            Loading countries...
         </div>
     </div>
 
     <!-- Yearly Stats -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Yearly Statistics</h5>
-            <button class="btn btn-sm btn-outline-primary"
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Yearly Statistics</h2>
+        <div
+            id="yearly-stats"
                     hx-get="{% url 'core:htmx_yearly_stats' %}"
-                    hx-target="#yearly-stats"
-                    hx-swap="innerHTML">
-                Refresh
-            </button>
-        </div>
-        <div class="card-body">
-            <div id="yearly-stats">
-                {% include 'core/partials/yearly_stats.html' %}
-            </div>
-            <div class="text-center mt-3">
-                <a href="{% url 'core:yearly_stats' %}" class="btn btn-outline-secondary">View Detailed Yearly Stats</a>
-            </div>
+            hx-trigger="load"
+            class="bg-white rounded-lg shadow p-4">
+            Loading yearly stats...
         </div>
     </div>
-{% endblock %}
+</div>
 
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set up auto-refresh every 5 minutes
-        setInterval(function() {
-            document.querySelectorAll('[hx-get]').forEach(function(el) {
-                if (el.getAttribute('hx-trigger') !== 'click') {
-                    htmx.trigger(el, 'refresh');
-                }
-            });
-        }, 300000); // 5 minutes
-    });
-</script>
+<!-- Auto refresh every 5 minutes -->
+<div
+    hx-get="{% url 'core:htmx_dashboard_stats' %}"
+    hx-trigger="every 5m"
+    hx-target="#dashboard-stats"
+    class="hidden">
+</div>
 {% endblock %}

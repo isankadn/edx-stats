@@ -22,7 +22,7 @@ A Django app for displaying statistics and analytics for Open edX instances. Thi
 1. Install the package:
 
 ```bash
-pip install -e git+https://github.com/yourusername/edx-stats.git#egg=edx-stats
+pip install -e git+https://github.com/isankadn/edx-stats.git#egg=edx-stats
 ```
 
 2. Add to your INSTALLED_APPS in `lms/envs/common.py`:
@@ -82,7 +82,7 @@ Access to the statistics is restricted to staff users only. Make sure users have
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/edx-stats.git
+git clone https://github.com/isankadn/edx-stats.git
 cd edx-stats
 ```
 

@@ -3,10 +3,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Count, Sum
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
 from django.db.models.functions import ExtractYear
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 import logging
 import redis
 from django.conf import settings
@@ -44,7 +45,20 @@ def check_redis_connection():
         logger.error(f"Redis connection failed: {str(e)}")
         return False
 
-class DashboardView(LoginRequiredMixin, TemplateView):
+class StaffRequiredMixin(UserPassesTestMixin):
+    """Mixin that requires user to be authenticated and staff"""
+
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_staff
+
+    def handle_no_permission(self):
+        if self.request.headers.get('HX-Request'):
+            # For HTMX requests, return a specific error message
+            return render(self.request, 'core/partials/permission_denied.html', status=403)
+        # For regular requests, raise PermissionDenied
+        raise PermissionDenied("You must be a staff member to access this page.")
+
+class DashboardView(StaffRequiredMixin, TemplateView):
     """Main dashboard view - the only full page view we need"""
     template_name = 'core/dashboard.html'
 
@@ -53,7 +67,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class HtmxCourseListView(LoginRequiredMixin, View):
+class HtmxCourseListView(StaffRequiredMixin, View):
     """HTMX view for course list"""
 
     def get(self, request, *args, **kwargs):
@@ -64,7 +78,7 @@ class HtmxCourseListView(LoginRequiredMixin, View):
         return render(request, 'core/partials/course_list.html', {'courses': courses})
 
 
-class HtmxCountryListView(LoginRequiredMixin, View):
+class HtmxCountryListView(StaffRequiredMixin, View):
     """HTMX view for country list"""
 
     def get(self, request, *args, **kwargs):
@@ -81,7 +95,7 @@ class HtmxCountryListView(LoginRequiredMixin, View):
         return render(request, 'core/partials/country_list.html', {'countries': countries})
 
 
-class HtmxYearlyStatsView(LoginRequiredMixin, View):
+class HtmxYearlyStatsView(StaffRequiredMixin, View):
     """HTMX view for yearly stats"""
 
     def get(self, request, *args, **kwargs):
@@ -97,7 +111,7 @@ class HtmxYearlyStatsView(LoginRequiredMixin, View):
         return render(request, 'core/partials/yearly_stats.html', {'yearly_stats': yearly_stats})
 
 
-class HtmxDashboardStatsView(LoginRequiredMixin, View):
+class HtmxDashboardStatsView(StaffRequiredMixin, View):
     """HTMX view for dashboard stats"""
 
     def get(self, request, *args, **kwargs):
@@ -143,6 +157,7 @@ class HtmxDashboardStatsView(LoginRequiredMixin, View):
             logger.info(f"Current user ID: {request.user.id}")
             logger.info(f"Current user is authenticated: {request.user.is_authenticated}")
             logger.info(f"Current user is active: {request.user.is_active}")
+            logger.info(f"Current user is staff: {request.user.is_staff}")
 
             return render(request, 'core/partials/dashboard_stats.html', {
                 'total_users': total_users,
@@ -161,7 +176,7 @@ class HtmxDashboardStatsView(LoginRequiredMixin, View):
             })
 
 
-class RefreshStatsView(LoginRequiredMixin, View):
+class RefreshStatsView(StaffRequiredMixin, View):
     """View for refreshing statistics"""
 
     def get(self, request, *args, **kwargs):

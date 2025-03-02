@@ -17,13 +17,24 @@ setup(
         "Django>=3.2.12,<4.0",
         "django-htmx>=1.14.0",
     ],
+    extras_require={
+        'dev': [
+            'pytest>=7.0.0',
+            'pytest-django>=4.5.0',
+            'pytest-cov>=3.0.0',
+            'black>=22.0.0',
+            'isort>=5.10.0',
+            'flake8>=4.0.0',
+        ],
+    },
     dependency_links=[
         "https://packages.edx.org/pypi/simple/",
     ],
     author="Open edX Community",
     author_email="info@openedx.org",
     description="Statistics and analytics for Open edX",
-    long_description="Statistics and analytics for Open edX",
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     url="https://github.com/openedx/edx-stats",
     classifiers=[
         "Development Status :: 3 - Alpha",

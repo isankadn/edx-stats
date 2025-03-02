@@ -1,0 +1,24 @@
+{% if courses %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Course Name</th>
+                    <th>Course ID</th>
+                    <th>Enrollments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.display_name }}</td>
+                    <td><small class="text-muted">{{ course.course_id }}</small></td>
+                    <td>{{ course.enrollment_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">No course data available. Please refresh the statistics.</div>
+{% endif %}

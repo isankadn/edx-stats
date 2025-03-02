@@ -1,0 +1,57 @@
+{% extends 'edx_stats/base.html' %}
+
+{% block title %}Dashboard - {{platform_name}} Statistics{% endblock %}
+
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+    <!-- Summary Stats -->
+    <div class="row" id="dashboard-stats">
+        {% include 'edx_stats/partials/dashboard_stats.html' %}
+    </div>
+
+    <!-- Top Courses -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Top Courses by Enrollment</h5>
+        </div>
+        <div class="card-body">
+            <div id="course-list">
+                {% include 'edx_stats/partials/course_list.html' with courses=course_stats %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="{% url 'edx_stats:course_list' %}" class="btn btn-outline-secondary">View All Courses</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Countries -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Top Countries by User Count</h5>
+        </div>
+        <div class="card-body">
+            <div id="country-list">
+                {% include 'edx_stats/partials/country_list.html' with countries=country_stats %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="{% url 'edx_stats:country_list' %}" class="btn btn-outline-secondary">View All Countries</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yearly Stats -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Yearly Statistics</h5>
+        </div>
+        <div class="card-body">
+            <div id="yearly-stats">
+                {% include 'edx_stats/partials/yearly_stats.html' %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="{% url 'edx_stats:yearly_stats' %}" class="btn btn-outline-secondary">View Detailed Yearly Stats</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

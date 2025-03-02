@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Countries - Open edX Statistics{% endblock %}
+
+{% block header %}User Statistics by Country{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Countries</h5>
+            <button class="btn btn-sm btn-outline-primary"
+                    hx-get="{% url 'core:htmx_country_list' %}"
+                    hx-target="#country-list"
+                    hx-swap="innerHTML">
+                Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="country-list">
+                {% include 'core/partials/country_list.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

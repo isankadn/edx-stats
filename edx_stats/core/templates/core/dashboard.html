@@ -1,0 +1,90 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard - Open edX Statistics{% endblock %}
+
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+    <!-- Summary Stats -->
+    <div class="row" id="dashboard-stats">
+        {% include 'core/partials/dashboard_stats.html' %}
+    </div>
+
+    <!-- Top Courses -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Top Courses by Enrollment</h5>
+            <button class="btn btn-sm btn-outline-primary"
+                    hx-get="{% url 'core:htmx_course_list' %}"
+                    hx-target="#course-list"
+                    hx-swap="innerHTML">
+                Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="course-list">
+                {% include 'core/partials/course_list.html' with courses=course_stats %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="{% url 'core:course_list' %}" class="btn btn-outline-secondary">View All Courses</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Countries -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Top Countries by User Count</h5>
+            <button class="btn btn-sm btn-outline-primary"
+                    hx-get="{% url 'core:htmx_country_list' %}"
+                    hx-target="#country-list"
+                    hx-swap="innerHTML">
+                Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="country-list">
+                {% include 'core/partials/country_list.html' with countries=country_stats %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="{% url 'core:country_list' %}" class="btn btn-outline-secondary">View All Countries</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yearly Stats -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Yearly Statistics</h5>
+            <button class="btn btn-sm btn-outline-primary"
+                    hx-get="{% url 'core:htmx_yearly_stats' %}"
+                    hx-target="#yearly-stats"
+                    hx-swap="innerHTML">
+                Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="yearly-stats">
+                {% include 'core/partials/yearly_stats.html' %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="{% url 'core:yearly_stats' %}" class="btn btn-outline-secondary">View Detailed Yearly Stats</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up auto-refresh every 5 minutes
+        setInterval(function() {
+            document.querySelectorAll('[hx-get]').forEach(function(el) {
+                if (el.getAttribute('hx-trigger') !== 'click') {
+                    htmx.trigger(el, 'refresh');
+                }
+            });
+        }, 300000); // 5 minutes
+    });
+</script>
+{% endblock %}

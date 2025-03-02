@@ -1,0 +1,24 @@
+{% if countries %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>Code</th>
+                    <th>Users</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for country in countries %}
+                <tr>
+                    <td>{{ country.country_name }}</td>
+                    <td>{{ country.country_code }}</td>
+                    <td>{{ country.user_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">No country data available. Please refresh the statistics.</div>
+{% endif %}

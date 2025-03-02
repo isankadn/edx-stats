@@ -1,0 +1,18 @@
+<div class="col-md-4">
+    <div class="card stats-card">
+        <div class="stats-number">{{ total_courses|default:"0" }}</div>
+        <div class="stats-label">Total Courses</div>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card stats-card">
+        <div class="stats-number">{{ total_enrollments|default:"0" }}</div>
+        <div class="stats-label">Total Enrollments</div>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card stats-card">
+        <div class="stats-number">{{ user_stats.total_users|default:"0" }}</div>
+        <div class="stats-label">Total Users</div>
+    </div>
+</div>

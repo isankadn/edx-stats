@@ -1,0 +1,49 @@
+{% if yearly_stats %}
+    <div class="row">
+        <div class="col-md-12">
+            <canvas id="yearlyStatsChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Extract data for the chart
+        var years = [{% for stat in yearly_stats %}"{{ stat.year }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+        var newUsers = [{% for stat in yearly_stats %}{{ stat.new_users }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+        var newEnrollments = [{% for stat in yearly_stats %}{{ stat.new_enrollments }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+        // Create the chart
+        var ctx = document.getElementById('yearlyStatsChart').getContext('2d');
+        var yearlyStatsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'New Users',
+                        data: newUsers,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'New Enrollments',
+                        data: newEnrollments,
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% else %}
+    <div class="alert alert-info">No yearly data available. Please refresh the statistics.</div>
+{% endif %}
